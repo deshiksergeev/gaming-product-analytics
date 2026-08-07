@@ -1,27 +1,29 @@
 /*
 Project: Secrets of Darkwood
-Analysis: In-game purchase analysis
-Description:
-Analyze the distribution of in-game purchase amounts, identify potential
-data quality issues, and evaluate the popularity of epic game items.
+Analysis: In-game purchases of epic items
+ 
+All amounts are denominated in paradise petals (premium in-game currency),
+not in real money. Aggregates over `amount` measure in-game spend.
 */
 
 
 -- ============================================================
 -- 2.1. Purchase Amount Statistics
 -- ============================================================
-/*
-Calculate descriptive statistics for transaction amounts,
-including total revenue, minimum and maximum purchase amounts,
-mean, median, and standard deviation.
 
-The median is included to assess the skewness of the purchase
-amount distribution and compare it with the mean.
+/*
+Descriptive statistics over all recorded transactions.
+ 
+Zero-cost transactions are intentionally NOT filtered here: this query
+establishes the baseline against which they are identified in 2.2.
+ 
+Median is included specifically to expose skewness — with a right-skewed
+distribution the mean is not a usable summary of a typical purchase.
 */
 
 SELECT
     COUNT(transaction_id) AS total_transactions,
-    SUM(amount) AS total_revenue,
+    SUM(amount) AS total_spend,
     MIN(amount) AS min_purchase_amount,
     MAX(amount) AS max_purchase_amount,
     AVG(amount) AS avg_purchase_amount,
@@ -31,11 +33,9 @@ SELECT
 FROM fantasy.events;
 
 /*
-Additional query for notebook visualization.
-
-Retrieve all non-zero purchase amounts to visualize
-the transaction amount distribution and compare
-the mean and median purchase values.
+Supporting extract for the notebook: raw non-zero amounts, used to plot the
+distribution. Filtered to amount > 0 so that the histogram and the summary
+statistics computed on it refer to the same population.
 */
 
 SELECT
@@ -43,45 +43,35 @@ SELECT
 FROM fantasy.events
 WHERE amount > 0;
 
+
 -- ============================================================
 -- 2.2. Zero-Cost Transactions
 -- ============================================================
 /*
-Identify transactions with zero purchase amount and calculate
-their share among all recorded transactions.
-
-Zero-cost transactions are treated as a potential data quality
-issue and are excluded from the analysis of paid item popularity.
+Zero-cost purchases generate no premium currency turnover and are treated as
+a data quality issue. Counted here, then excluded from every downstream query.
 */
 
-WITH zero_cost_transactions AS (
-    SELECT
-        CASE
-            WHEN amount = 0 THEN 1
-            ELSE 0
-        END AS is_zero_cost
-    FROM fantasy.events
-)
-SELECT
-    SUM(is_zero_cost) AS zero_cost_transactions,
-    SUM(is_zero_cost) / COUNT(*)::NUMERIC AS zero_cost_share
-FROM zero_cost_transactions;
 
+SELECT
+    COUNT(*) FILTER (WHERE amount = 0) AS zero_cost_transactions,
+    COUNT(*) FILTER (WHERE amount = 0) / COUNT(*)::NUMERIC AS zero_cost_share
+FROM fantasy.events;
 
 -- ============================================================
--- 2.3. Popular Epic Items
+-- 2.3. Epic item popularity
 -- ============================================================
 /*
-Analyze the popularity of epic game items based on non-zero
-purchase transactions.
-
-The analysis calculates:
-- total number of transactions for each item;
-- share of all non-zero transactions;
-- share of users who purchased each item.
-
-The results are joined with the item reference table to display
-human-readable item names.
+Ranks epic items by the share of buyers who purchased them at least once,
+as required by the task — not by transaction count. The two orderings differ:
+an item can dominate transaction volume through repeat purchases by a narrow
+audience.
+ 
+Per item:
+  - transaction count and its share of all paid transactions;
+  - share of unique buyers who purchased the item at least once.
+ 
+Buyer shares do not sum to 100%: one buyer can purchase several items.
 */
 
 
