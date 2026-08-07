@@ -1,20 +1,24 @@
 /*
 Project: Secrets of Darkwood
-Analysis: Player monetization
-Description:
-Analyze the overall share of paying players and compare payer conversion
-across character races.
+Analysis: Player monetization (real-money conversion)
+ 
+Business context:
+"Paradise petals" is the premium in-game currency. It can be earned through
+quests OR bought for real money. The `payer` flag marks players who bought it
+for real money — this is the only revenue-related field in the schema.
+ 
+Note on terminology: the `amount` field in fantasy.events is denominated in
+paradise petals, NOT in real money. Sums over `amount` are in-game spend,
+not revenue.
 */
-
+ 
 -- ============================================================
--- 1.1. Overall Payer Share
+-- 1.1. Overall payer share
 -- ============================================================
 /*
-Calculate the share of registered players who made at least one payment.
-
-The `payer` field is a binary indicator:
-1 — paying player
-0 — non-paying player.
+Share of registered players who bought premium currency for real money.
+ 
+`payer` is binary: 1 — paying player, 0 — non-paying.
 */
 
 SELECT
@@ -25,13 +29,15 @@ FROM fantasy.users;
 
 
 -- ============================================================
--- 1.2. Payer Share by Character Race
+-- 1.2. Payer share by character race
 -- ============================================================
 /*
-Compare the share of paying players across character races.
-
-The analysis joins player data with the race reference table
-to calculate the number and share of paying players for each race.
+Tests whether real-money conversion depends on the race chosen by the player.
+ 
+Output is deliberately kept at raw counts as well as shares: the smallest race
+has ~1.2k players, so the shares alone are not interpretable without knowing
+the denominator. Significance of the observed spread is tested in the notebook
+(chi-squared test of independence), not here.
 */
 
 SELECT
