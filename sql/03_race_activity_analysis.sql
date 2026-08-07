@@ -1,16 +1,38 @@
 /*
 Project: Secrets of Darkwood
-Analysis: Player activity by character race
-Description:
-Compare player activity and monetization behavior across character races
-using buyer conversion, payer conversion, purchase frequency, average
-purchase amount, and revenue per buyer.
+Analysis: Player activity by character race (ad hoc request)
+ 
+Request from the analytics team: test the hypothesis that some races are
+harder to play and therefore require more epic item purchases to progress.
+The design goal is balance — no race should be markedly easier or harder.
+ 
+The question is therefore about game balance, not about audience segmentation
+for marketing. Purchase intensity is read here as a proxy for progression
+difficulty.
+ 
+All amounts are in paradise petals (in-game currency), not real money.
 */
 
 
 -- ============================================================
--- Ad Hoc Analysis: Player Activity by Character Race
+-- Ad hoc: purchase activity by race
 -- ============================================================
+/*
+Per race:
+  - registered players;
+  - buyers (players with at least one non-zero purchase) and their share;
+  - share of real-money payers among buyers;
+  - purchases per buyer;
+  - average purchase amount per buyer;
+  - total spend per buyer.
+ 
+Two distinct populations are involved and must not be conflated:
+  buyers  — spend petals on epic items (may have earned them via quests);
+  payers  — bought petals for real money (`payer` = 1).
+A player can be one without being the other.
+ 
+Zero-cost transactions are excluded per the task specification.
+*/
 
 WITH total_players AS (
     SELECT
@@ -19,6 +41,8 @@ WITH total_players AS (
     FROM fantasy.users
     GROUP BY race_id
 ),
+-- Buyer-side aggregates. INNER JOIN drops races with no purchases at all;
+-- verified that no such race exists in this data.
 in_game_buyers AS (
     SELECT
         u.race_id,
@@ -30,6 +54,8 @@ in_game_buyers AS (
     WHERE e.amount > 0
     GROUP BY u.race_id
 ),
+-- Payers restricted to buyers only: the denominator of payers_buyers_share
+-- is buyers, so the numerator must come from the same population.
 payers AS (
     SELECT
         race_id,
