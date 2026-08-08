@@ -47,8 +47,8 @@ in_game_buyers AS (
     SELECT
         u.race_id,
         COUNT(DISTINCT u.id) AS total_buyers,
-        COUNT(e.amount) AS total_purchases,
-        SUM(e.amount) AS total_revenue
+        COUNT(e.transaction_id) AS total_purchases,
+        SUM(e.amount) AS total_spend
     FROM fantasy.users AS u
     INNER JOIN fantasy.events AS e USING (id)
     WHERE e.amount > 0
@@ -78,12 +78,12 @@ SELECT
         / ib.total_buyers::NUMERIC AS payers_buyers_share,
     ib.total_purchases
         / ib.total_buyers::NUMERIC AS avg_purchases_per_buyer,
-    ib.total_revenue
+    ib.total_spend
         / ib.total_purchases::NUMERIC AS avg_purchase_amount,
-    ib.total_revenue
-        / ib.total_buyers::NUMERIC AS revenue_per_buyer
+    ib.total_spend
+        / ib.total_buyers::NUMERIC AS spend_per_buyer
 FROM total_players AS tp
 INNER JOIN in_game_buyers AS ib USING (race_id)
 INNER JOIN payers AS p USING (race_id)
 INNER JOIN fantasy.race AS r USING (race_id)
-ORDER BY revenue_per_buyer DESC;
+ORDER BY avg_purchases_per_buyer DESC;

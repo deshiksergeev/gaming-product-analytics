@@ -75,15 +75,22 @@ Buyer shares do not sum to 100%: one buyer can purchase several items.
 */
 
 
-WITH item_transaction_stats AS (
+WITH paid_events AS (
+    SELECT
+    		transaction_id,
+    		id,
+    		item_code
+    FROM fantasy.events
+    WHERE amount > 0
+),
+item_transaction_stats AS (
     SELECT DISTINCT
         item_code,
         COUNT(transaction_id)
             OVER (PARTITION BY item_code) AS total_transactions,
         COUNT(transaction_id)
             OVER (PARTITION BY item_code) / COUNT(*) OVER ()::NUMERIC AS transaction_share
-    FROM fantasy.events
-    WHERE amount > 0
+    FROM paid_events
 ),
 item_buyer_stats AS (
     SELECT
@@ -91,11 +98,9 @@ item_buyer_stats AS (
         COUNT(DISTINCT id)
             / (
                 SELECT COUNT(DISTINCT id)
-                FROM fantasy.events
-                WHERE amount > 0
+                FROM paid_events
             )::NUMERIC AS buyer_share
-    FROM fantasy.events
-    WHERE amount > 0
+    FROM paid_events
     GROUP BY item_code
 )
 SELECT
