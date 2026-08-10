@@ -26,7 +26,7 @@ in the MMORPG *Secrets of Darkwood*.
   for monetization.
 - **In-game spend is extremely heavy-tailed.** Mean purchase 526.06 against a median of 74.86,
   standard deviation 2,518 — a coefficient of variation of 4.8 per transaction, rising to 6.03
-  when aggregated per buyer. The top 0.1% of transactions account for $\sim$ 10% of total turnover.
+  when aggregated per buyer. The top 0.1% of transactions account for ~10% of total turnover.
   Any comparison of means on this metric is statistically fragile.
 - **Demand is concentrated in two items.** *Book of Legends* accounts for 76.9% of all paid
   transactions and was bought by 88.4% of buyers; *Bag of Holding* accounts for 20.8% and
@@ -99,7 +99,7 @@ Two candidate metrics are compared:
 | Spend per buyer, winsorized P99 | continuous, CV 2.22 | yes (FPR 5.6%) | 10.6% | usable as decision metric |
 | Spend per buyer, log1p | continuous, CV 0.22 | yes (FPR 5.2%) | 1.0% | changes the estimand |
 
-Contrary to the usual expectation that the CLT rescues heavy-tailed metrics at n $\approx 10^4$,
+Contrary to the usual expectation that the CLT rescues heavy-tailed metrics at n ≈ 10⁴,
 Welch's t-test **failed** here: a 2.6% observed false positive rate against a nominal 5%, with
 significantly non-uniform p-values. A practitioner running this test unchecked would have
 concluded, wrongly, that a true effect was absent.
@@ -108,7 +108,7 @@ concluded, wrongly, that a true effect was absent.
 through advertising - is testable: an 8% relative lift is detectable on the full player base.
 In-game spend per buyer is testable only after variance reduction — the raw metric is both
 miscalibrated and underpowered, while winsorizing at P99 brings the MDE down to 10.6%. Testing
-anything at the level of a single race remains hopeless (MDE $\approx$ 34% relative for the smallest race).
+anything at the level of a single race remains hopeless (MDE ≈ 34% relative for the smallest race).
 
 ![](images/aa_pvalue_distribution.png)
 ![](images/power_curve.png)
