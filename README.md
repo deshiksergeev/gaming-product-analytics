@@ -24,10 +24,10 @@ in the MMORPG *Secrets of Darkwood*.
   testing (p = 0.12 against all other races); it is an artifact of the smallest race group
   (1,229 players) having the widest confidence interval. Race is not a usable targeting axis
   for monetization.
-- **In-game spend is extremely heavy-tailed.** Mean purchase 526.06 against a median of 74.86,
-  standard deviation 2,518 — a coefficient of variation of 4.8 per transaction, rising to 6.03
-  when aggregated per buyer. The top 0.1% of transactions account for ~10% of total turnover.
-  Any comparison of means on this metric is statistically fragile.
+- **In-game spend is extremely heavy-tailed.** Excluding zero-cost events, mean purchase is
+  526.06 against a median of 74.86, standard deviation 2,518 — a coefficient of variation of
+  4.8 per transaction, rising to 6.03 when aggregated per buyer. The top 0.1% of transactions
+  account for 9.6% of total turnover. Any comparison of means on this metric is statistically fragile.
 - **Demand is concentrated in two items.** *Book of Legends* accounts for 76.9% of all paid
   transactions and was bought by 88.4% of buyers; *Bag of Holding* accounts for 20.8% and
   86.8%. The remaining 143 items form a negligible long tail.
