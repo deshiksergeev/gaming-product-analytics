@@ -48,7 +48,7 @@ in_game_buyers AS (
         u.race_id,
         COUNT(DISTINCT u.id) AS total_buyers,
         COUNT(e.transaction_id) AS total_purchases,
-        SUM(e.amount) AS total_spend
+        SUM(e.amount::FLOAT8::NUMERIC) AS total_spend
     FROM fantasy.users AS u
     INNER JOIN fantasy.events AS e USING (id)
     WHERE e.amount > 0

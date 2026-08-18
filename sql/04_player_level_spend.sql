@@ -19,7 +19,7 @@ SELECT
     r.race,
     u.payer,
     COUNT(e.transaction_id) AS purchases,
-    SUM(e.amount) AS total_spend,
+    SUM(e.amount::FLOAT8::NUMERIC) AS total_spend,
     AVG(e.amount) AS avg_purchase_amount
 FROM fantasy.users AS u
 INNER JOIN fantasy.events AS e USING (id)

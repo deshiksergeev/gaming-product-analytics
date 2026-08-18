@@ -23,7 +23,11 @@ distribution the mean is not a usable summary of a typical purchase.
 
 SELECT
     COUNT(transaction_id) AS total_transactions,
-    SUM(amount) AS total_spend,
+    -- amount is float4; sum(real) returns real and accumulates 1.3M values in a
+    -- 24-bit mantissa, losing ~0.12% (820k petals). The intermediate float8 cast
+    -- matters: float4 -> numeric renders through six significant digits and still
+    -- drifts by ~60 petals, while float4 -> float8 is exact.
+    SUM(amount::FLOAT8::NUMERIC) AS total_spend,
     MIN(amount) AS min_purchase_amount,
     MAX(amount) AS max_purchase_amount,
     AVG(amount) AS avg_purchase_amount,
@@ -51,12 +55,28 @@ WHERE amount > 0;
 Zero-cost purchases generate no premium currency turnover and are treated as
 a data quality issue. Counted here, then excluded from every downstream query.
 */
-
-
 SELECT
     COUNT(*) FILTER (WHERE amount = 0) AS zero_cost_transactions,
     COUNT(*) FILTER (WHERE amount = 0) / COUNT(*)::NUMERIC AS zero_cost_share
 FROM fantasy.events;
+
+/*
+Zero-cost transactions are excluded downstream, but "excluded" is a decision that
+needs a reason. This extract supports the profiling in the notebook: if the rows
+cluster on a handful of players, items or dates, they are a promotion or a logging
+artifact; if they are spread uniformly, they are a systematic pricing bug.
+*/
+
+SELECT
+    e.transaction_id,
+    e.id,
+    e.date,
+    e.item_code,
+    i.game_items,
+    e.seller_id
+FROM fantasy.events AS e
+LEFT JOIN fantasy.items AS i USING (item_code)
+WHERE e.amount = 0;
 
 -- ============================================================
 -- 2.3. Epic item popularity
