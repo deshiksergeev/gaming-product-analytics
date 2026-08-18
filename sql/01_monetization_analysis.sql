@@ -1,6 +1,5 @@
 /*
-Project: Secrets of Darkwood
-Analysis: Player monetization (real-money conversion)
+Player monetization (real-money conversion)
  
 Business context:
 "Paradise petals" is the premium in-game currency. It can be earned through
@@ -12,12 +11,10 @@ paradise petals, NOT in real money. Sums over `amount` are in-game spend,
 not revenue.
 */
  
--- ============================================================
--- 1.1. Overall payer share
--- ============================================================
+
+---------- 1.1. Overall payer share -------------------------------
 /*
 Share of registered players who bought premium currency for real money.
- 
 `payer` is binary: 1 — paying player, 0 — non-paying.
 */
 
@@ -27,10 +24,7 @@ SELECT
     SUM(payer) / COUNT(id)::NUMERIC AS payer_share
 FROM fantasy.users;
 
-
--- ============================================================
--- 1.2. Payer share by character race
--- ============================================================
+----------- 1.2. Payer share by character race ---------------------------
 /*
 Tests whether real-money conversion depends on the race chosen by the player.
  

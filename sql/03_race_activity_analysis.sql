@@ -1,5 +1,4 @@
 /*
-Project: Secrets of Darkwood
 Analysis: Player activity by character race (ad hoc request)
  
 Request from the analytics team: test the hypothesis that some races are
@@ -13,10 +12,7 @@ difficulty.
 All amounts are in paradise petals (in-game currency), not real money.
 */
 
-
--- ============================================================
--- Ad hoc: purchase activity by race
--- ============================================================
+------------------- Purchase activity by race ---------------------------
 /*
 Per race:
   - registered players;

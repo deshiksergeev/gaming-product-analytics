@@ -1,5 +1,4 @@
 /*
-Project: Secrets of Darkwood
 Analysis: Player-level spend extract
 
 Supports the metric validation section of the notebook: A/A simulation,

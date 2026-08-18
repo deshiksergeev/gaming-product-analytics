@@ -1,5 +1,4 @@
 /*
-Project: Secrets of Darkwood
 Analysis: In-game purchases of epic items
  
 All amounts are denominated in paradise petals (premium in-game currency),
@@ -7,9 +6,7 @@ not in real money. Aggregates over `amount` measure in-game spend.
 */
 
 
--- ============================================================
--- 2.1. Purchase Amount Statistics
--- ============================================================
+---------------- 2.1. Purchase Amount Statistics -----------------------
 
 /*
 Descriptive statistics over all recorded transactions.
@@ -47,10 +44,7 @@ SELECT
 FROM fantasy.events
 WHERE amount > 0;
 
-
--- ============================================================
--- 2.2. Zero-Cost Transactions
--- ============================================================
+-------------------- 2.2. Zero-Cost Transactions ------------------------------
 /*
 Zero-cost purchases generate no premium currency turnover and are treated as
 a data quality issue. Counted here, then excluded from every downstream query.
@@ -78,9 +72,7 @@ FROM fantasy.events AS e
 LEFT JOIN fantasy.items AS i USING (item_code)
 WHERE e.amount = 0;
 
--- ============================================================
--- 2.3. Epic item popularity
--- ============================================================
+------------------ 2.3. Epic item popularity --------------------------------
 /*
 Ranks epic items by the share of buyers who purchased them at least once,
 as required by the task — not by transaction count. The two orderings differ:
