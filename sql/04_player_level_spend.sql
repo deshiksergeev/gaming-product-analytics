@@ -1,16 +1,10 @@
 /*
-Analysis: Player-level spend extract
-
-Supports the metric validation section of the notebook: A/A simulation,
-MDE estimation and power analysis all operate on the player grain, whereas
-fantasy.events is at the transaction grain.
-
-Grain: one row = one buyer (a player with at least one non-zero purchase).
-
-The `payer` flag is carried through so that the two candidate experiment
-metrics can be evaluated on the same extract:
-  - real-money conversion (binary, per player);
-  - in-game spend per buyer (continuous, heavy-tailed).
+Player-level extract for the metric validation section: one row per buyer, since fantasy.events
+is at the transaction grain and the A/A simulation is not.
+ 
+Note the grain is buyers, not registered players — the notebook pads the 8,422 non-buyers back
+in with zeros, because conditioning on having bought is conditioning on a post-treatment
+outcome. The `payer` flag rides along so both candidate metrics come from the same extract.
 */
 
 SELECT

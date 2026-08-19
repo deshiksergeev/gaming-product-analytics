@@ -1,22 +1,9 @@
 /*
-Analysis: In-game purchases of epic items
- 
-All amounts are denominated in paradise petals (premium in-game currency),
-not in real money. Aggregates over `amount` measure in-game spend.
+In-game purchases of epic items. All amounts are in paradise petals, not money.
 */
-
-
----------------- 2.1. Purchase Amount Statistics -----------------------
-
-/*
-Descriptive statistics over all recorded transactions.
  
-Zero-cost transactions are intentionally NOT filtered here: this query
-establishes the baseline against which they are identified in 2.2.
- 
-Median is included specifically to expose skewness — with a right-skewed
-distribution the mean is not a usable summary of a typical purchase.
-*/
+-- Baseline over all rows. Zero-cost transactions are deliberately not filtered here — this is
+-- the query against which they are identified below.
 
 SELECT
     COUNT(transaction_id) AS total_transactions,
@@ -33,33 +20,23 @@ SELECT
     STDDEV(amount) AS std_purchase_amount
 FROM fantasy.events;
 
-/*
-Supporting extract for the notebook: raw non-zero amounts, used to plot the
-distribution. Filtered to amount > 0 so that the histogram and the summary
-statistics computed on it refer to the same population.
-*/
+-- Distribution extract for the notebook, filtered to match the population every downstream
+-- query uses.
 
 SELECT
     amount
 FROM fantasy.events
 WHERE amount > 0;
 
--------------------- 2.2. Zero-Cost Transactions ------------------------------
-/*
-Zero-cost purchases generate no premium currency turnover and are treated as
-a data quality issue. Counted here, then excluded from every downstream query.
-*/
+
 SELECT
     COUNT(*) FILTER (WHERE amount = 0) AS zero_cost_transactions,
     COUNT(*) FILTER (WHERE amount = 0) / COUNT(*)::NUMERIC AS zero_cost_share
 FROM fantasy.events;
 
-/*
-Zero-cost transactions are excluded downstream, but "excluded" is a decision that
-needs a reason. This extract supports the profiling in the notebook: if the rows
-cluster on a handful of players, items or dates, they are a promotion or a logging
-artifact; if they are spread uniformly, they are a systematic pricing bug.
-*/
+-- "Excluded as a data quality issue" needs a reason. This extract lets the notebook check
+-- whether the zero-cost rows cluster on a few players, items or dates (promotion, logging
+-- artifact) or spread uniformly (systematic pricing bug).
 
 SELECT
     e.transaction_id,
